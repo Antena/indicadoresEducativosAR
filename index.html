@@ -148,8 +148,6 @@ var pointsMargin = 10, pointsWidth = 300;
 var rowHeight = 30, rowsPerGroup = 4;
 var sourceMap;
 var mapHeight = rowHeight * 4, mapWidth = 200;
-console.log(mapWidth)
-console.log(mapHeight)
 var mapProjection = d3.geo.transverseMercator()
     .rotate([62,0])
     .translate([mapWidth / 2, mapHeight / 2]);
@@ -210,9 +208,7 @@ var buildDataTable = function(data) {
 
     // delete micromaps
     d3.selectAll('#partidos svg.map').remove();
-    // zoom sourceMap to selected province
-    // zoomToProvince(sourceMap, selectedProvince);
-    zoomToCountry(sourceMap);
+    setScale(sourceMap);
     // add micromaps (by cloning sourceMap)
     for (i = 0; i < data.length / rowsPerGroup; i++) {
         var c = d3.select('svg#clonethis').node().cloneNode(true);
@@ -288,11 +284,9 @@ var plotVariable = function(variable) {
 
 var zoomToProvince = function(map, province) {
 
-    console.log(province)
     var b = mapPath.bounds(mapProvinces.features.filter(function(e) {
         return e.id == province;
     })[0]);
-    console.log(b);
 
     var k = 0.95 / Math.max((b[1][0] - b[0][0]) / mapWidth, (b[1][1] - b[0][1]) / mapHeight);
 
@@ -309,7 +303,7 @@ var zoomToProvince = function(map, province) {
         .style('stroke-width', 1/(k*2) + 'px');;
 };
 
-var zoomToCountry = function(map) {
+var setScale = function(map) {
     var k = 1.2;
 
     map.attr('transform',
@@ -334,17 +328,16 @@ var buildMap = function(topology) {
                  .attr('class', 'map')
                  .append('g');
 
-                 console.log(topology.objects);
-    // var dptos = topojson.feature(topology, topology.objects.departamentos);
     mapProvinces = topojson.feature(topology, topology.objects.provincias);
     sourceMap.selectAll('path')
-        //.data(dptos.features)
         .data(mapProvinces.features)
         .enter()
         .append('path')
         .attr('id', function(d) { return d.id; })
-        .attr('provincia', function(d) { return d.properties.p_id !== undefined ? d.properties.p_id.toUpperCase() : ''; })
+        .attr('provincia', function(d) { return d.id })
         .attr('d', mapPath);
+
+    // buildDataTable(censoData);
 };
 
 d3.select('select#variable')
