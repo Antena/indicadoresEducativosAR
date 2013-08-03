@@ -220,7 +220,6 @@ var buildDataTable = function(data) {
         c.style.visibility = 'visible';
         d3.select('#partidos').node().appendChild(c);
         d3.select(c);
-
     }
 
 };
@@ -240,8 +239,8 @@ var plotVariable = function(variable) {
         return d[variable];
     });
 
-    d3.select('#extent-min').html(toFixed(scalex.invert(0) * 100, 2) + '%');
-    d3.select('#extent-max').html(toFixed(scalex.invert(pointsWidth) * 100, 2) + '%');
+    d3.select('#extent-min').html(toFixed(scalex.invert(0), 2) + '%');
+    d3.select('#extent-max').html(toFixed(scalex.invert(pointsWidth), 2) + '%');
     svg.select('#average-line')
         .transition()
         .duration(transitionDuration)
