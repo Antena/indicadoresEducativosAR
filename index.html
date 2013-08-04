@@ -227,8 +227,10 @@ var plotVariable = function(variable, year, level) {
     console.log("indicador= " + indicador);
     var ext = d3.extent(censoData,
                         function(d) {
-                            return d[indicador];
+                            return parseFloat(d[indicador]);
                         });
+
+    console.log(ext);
 
     var scalex = d3.scale.linear()
         .domain(ext)
