@@ -12,13 +12,8 @@
     position: relative;
     line-height: 20px;
   }
+  label { font-weight: bold; }
 
-  div.vcard {
-    float: right;
-    margin-left:auto;
-    margin-right:0px;
-    font-size: 12px;
-  }
   #container {
     width: 90%;
     margin: 0 auto;
@@ -63,6 +58,11 @@
     top: -20px;
     font-size: 12px;
   }
+
+  footer {
+    font-size: 80%;
+  }
+
   #extent-min {
     left: 260px;
   }
@@ -99,13 +99,14 @@
 </head>
 <body>
   <div id="controls">
+    <h1>Indicadores Educativos</h1>
     <label for="variable">Variable:</label>
     <select id="variable" name="variable">
       <option value="abandono">% Abandono</option>
       <option value="promocion">% Promocion</option>
       <option value="repitencia">% Repitencia</option>
     </select>
-    <label for="year">Año</label>
+    <label for="year">Año:</label>
     <select id="year" name="year">
       <option value="2003">2003</option>
       <option value="2004">2004</option>
@@ -115,7 +116,7 @@
       <option value="2008">2008</option>
       <option value="2009">2009</option>
     </select>
-    <label for="level">Nivel</label>
+    <label for="level">Nivel:</label>
     <select id="level" name="level">
       <option value="egb_1">EGB1</option>
       <option value="egb_2">EGB2</option>
@@ -132,13 +133,6 @@
       <option value="poli_3">Polimodal 3</option>
       <option value="poli_total">Polimodal Total</option>
     </select>
-    <div class="vcard">
-      <strong><a href="http://github.com/jazzido/d3micromaps">d3.micromaps</a></strong> — Copyright © 2013
-      <a class="url fn n" href="http://jazzido.com/">
-        <span class="given-name">Manuel</span>
-        <span class="family-name">Aristarán</span>
-      </a>
-    </div>
   </div>
   <div id="container">
     <span id="extent-min"></span>
@@ -146,7 +140,11 @@
 
     <div id="partidos">
     </div>
-  </div>
+
+    <footer>
+      <p>Desarrollado durante el <a href="http://datospublicos.gob.ar/hackatonprogramar/">Hackatón Programar</a> en Agosto de 2013 por <a href="http://twitter.com/monsieurBelbo">Gonzalo Bellver</a>, <a href="http://twitter.com/andy_tow">Andy Tow</a>, <a href="http://twitter.com/munshkr">Damián Silvani</a>, <a href="http://twitter.com/malev">Marcos Vanetta</a>, <a href="http://twitter.com/manuelaristaran">Manuel Aristarán</a>.</p>
+      <p>Basado en <a href="http://github.com/jazzido/d3micromaps">d3.micromaps</a> de <a href="http://jazzido.com">Manuel Aristarán</a></p>
+    </footer>
   <script src="topojson.v1.min.js"></script>
   <script src="queue.v1.min.js"></script>
   <script src="d3.v3.min.js"></script>
