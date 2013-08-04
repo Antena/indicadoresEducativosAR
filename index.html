@@ -63,24 +63,34 @@
     font-size: 12px;
   }
   #extent-min {
-    left: 240px;
+    left: 260px;
   }
   #extent-max {
-    left: 540px;
+    left: 560px;
   }
-  svg { pointer-events: none;}
   svg#points {
     position: absolute;
     top: 0px;
-    left: 250px;
+    left: 280px;
     border-left: 1px solid #444;
     border-right: 1px solid #444;
   }
+  svg#sparklines {
+    position: absolute;
+    top: 0px;
+    left: 200px;
+  }
+  svg#sparklines path{ fill: none; stroke-width: 1px; stroke: black;}
+
   svg.map { position: absolute; }
   svg.map#clonethis { visibility: hidden; }
   svg.map path { fill: #333; stroke: #333; stroke-width: 0.05px;}
   svg.map path.invisible { opacity: 0; }
-
+  svg.map.scaled {
+          -webkit-transform: scale(2) ;
+          -moz-transform: scale(2);
+          left: 650px !important;
+  }
 </style>
 </head>
 <body>
@@ -216,7 +226,13 @@ var buildDataTable = function(data) {
         c.style.left = '550px';
         c.style.visibility = 'visible';
         d3.select('#partidos').node().appendChild(c);
-        d3.select(c);
+        d3.select(c)
+            .on('mouseover', function(e) {
+                d3.select(this).classed('scaled', true);
+            })
+            .on('mouseout', function(e) {
+                d3.select(this).classed('scaled', false);
+            });
 
     }
 
