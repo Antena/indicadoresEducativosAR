@@ -26,6 +26,7 @@
     height: 100%;
     position: relative;
   }
+
   #partidos {
     position: relative;
     width: 100%;
@@ -79,6 +80,7 @@
     position: absolute;
     top: 0px;
     left: 200px;
+    pointer-events: none;
   }
   svg#sparklines path{ fill: none; stroke-width: 1px; stroke: black;}
 
@@ -99,7 +101,7 @@
     <select id="variable" name="variable">
       <option value="abandono">% Abandono</option>
       <option value="promocion">% Promocion</option>
-      <option value="repitencia">% Repitencia</option>    
+      <option value="repitencia">% Repitencia</option>
     </select>
     <label for="year">Año</label>
     <select id="year" name="year">
@@ -115,7 +117,7 @@
     <select id="level" name="level">
       <option value="egb_1">EGB1</option>
       <option value="egb_2">EGB2</option>
-      <option value="egb_1y2_total">EGB 1 y 2</option>      
+      <option value="egb_1y2_total">EGB 1 y 2</option>
       <option value="egb_3">EGB3</option>
       <option value="egb_4">EGB4</option>
       <option value="egb_5">EGB5</option>
@@ -216,6 +218,30 @@ var buildDataTable = function(data) {
         .attr('stroke-width', 1)
         .attr('id', 'average-line');
 
+
+    d3.selectAll('svg#sparklines path').remove();
+    d3.select('svg#sparklines')
+        .attr('height', data.length * rowHeight)
+        .selectAll('path')
+        .data(data, function(d) { return d.id })
+        .enter()
+        .append('path')
+        .attr('id', function(d) { return d.id; });
+
+
+    sparklines_svg.select('#year-line').remove();
+    sparklines_svg.append('line')
+        .attr('x1', 0)
+        .attr('y1', 0)
+        .attr('x2', 0)
+        .attr('y2', provinceData.length * rowHeight)
+        .attr('stroke-dasharray', '3,3')
+        .attr('stroke', 'red')
+        .attr('stroke-width', 1)
+        .attr('id', 'year-line')
+        .style('opacity', 0.5);
+
+
     // delete micromaps
     d3.selectAll('#partidos svg.map').remove();
     setScale(sourceMap);
@@ -240,13 +266,11 @@ var buildDataTable = function(data) {
 
 var plotVariable = function(variable, year, level) {
     var indicador = variable + year + "_" + level;
-    console.log("indicador= " + indicador);
+
     var ext = d3.extent(censoData,
                         function(d) {
                             return parseFloat(d[indicador]);
                         });
-
-    console.log(ext);
 
     var scalex = d3.scale.linear()
         .domain(ext)
@@ -268,6 +292,7 @@ var plotVariable = function(variable, year, level) {
     var sorted = censoData.sort(function(a,b) {
         return +b[indicador] - +a[indicador];
     });
+    plotSparklines(sorted, variable, level);
 
     d3.selectAll('#partidos div')
         .data(sorted)
@@ -281,6 +306,9 @@ var plotVariable = function(variable, year, level) {
            return scalex(d[indicador]);
        })
        .attr('r', 5);
+
+    svg.selectAll('circle')
+       .append('title').text(function(d) { return d[indicador]; });
 
     d3.selectAll('#partidos .map path').style('fill', 'none');
     for (i = 0; i < sorted.length / rowsPerGroup; i++) {
@@ -296,6 +324,38 @@ var plotVariable = function(variable, year, level) {
         }
     }
 };
+
+YEARS = d3.selectAll('#year option')[0].map(function(d) { return d.innerHTML; });
+var plotSparklines = function(data, variable, level) {
+    d3.selectAll('svg#sparklines path')
+        .data(data)
+        .attr('d', function(d) {
+            d = YEARS.map(function(year) {
+                return parseFloat(d[variable + year + "_" + level]);
+            });
+
+            var scale_y = d3.scale.linear()
+                                  .domain(d3.extent(d))
+                                  .range([rowHeight - 5, 5]);
+
+            var sparkline_gen = d3.svg.line()
+                 .x(function(d, i) { return i * 12; })
+                 .y(scale_y);
+            return sparkline_gen(d);
+        })
+        .attr('transform', function(d, i) {
+            return 'translate(0,' + (i * rowHeight) + ')';
+        });
+
+    sparklines_svg.select('#year-line')
+        .transition()
+        .attr('x1', d3.select('#year')[0][0].selectedIndex * 12)
+        .attr('x2', d3.select('#year')[0][0].selectedIndex * 12);
+
+
+};
+
+
 
 var setScale = function(map) {
     var k = 1.2;
@@ -324,7 +384,7 @@ var buildMap = function(topology) {
         .append('path')
         .attr('id', function(d) { return to_id(d.id); })
         .attr('provincia', function(d) { return to_id(d.id) })
-        .attr('d', mapPath);    
+        .attr('d', mapPath);
 };
 
 d3.selectAll('select')
@@ -346,7 +406,12 @@ var ready = function(error, data, argentina) {
         .append('svg')
         .attr('width', pointsWidth)
         .attr('id', 'points');
-    
+
+    sparklines_svg = d3.select('#container')
+        .append('svg')
+        .attr('width', 100)
+        .attr('id', 'sparklines');
+
     buildDataTable(censoData, 2003, "egb_1");
     d3.select('select#variable').on('change')();
     // d3.select('select#year').on('change')();
