@@ -349,10 +349,8 @@ var plotSparklines = function(data, variable, level) {
 
     sparklines_svg.select('#year-line')
         .transition()
-        .attr('x1', d3.select('#year')[0][0].selectedIndex * 12)
-        .attr('x2', d3.select('#year')[0][0].selectedIndex * 12);
-
-
+        .attr('x1', d3.select('#year')[0][0].selectedIndex * 12 + 1)
+        .attr('x2', d3.select('#year')[0][0].selectedIndex * 12 + 1);
 };
 
 
