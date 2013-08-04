@@ -1,8 +1,16 @@
-d3.micromaps
-============
+Indicadores Educativos
+======================
 
-A prototype implementation of [Linked Micromap Plots](http://mason.gmu.edu/~dcarr/lib/v9n1.pdf) (Daniel B. Carr et al. 1998), applied to some variables of the 2010 Argentinian Population Census.
+Visualización de indicadores educativos de los años 2003 a 2009
 
-__[Demo](http://bl.ocks.org/jazzido/raw/5962277/)__
+Desarrollado durante el [Hackatón Programar](http://datospublicos.gob.ar/hackatonprogramar/) en Agosto de 2013 por:
 
-Copyright (C) 2013 [Manuel Aristarán](http://jazzido.com) — Released under the MIT License
+  - [Gonzalo Bellver](http://twitter.com/monsieurBelbo)
+  - [Andy Tow](http://twitter.com/andy_tow)
+  - [Damián Silvani](http://twitter.com/munshkr)
+  - [Marcos Vanetta](http://twitter.com/malev)
+  - [Manuel Aristarán](http://twitter.com/manuelaristaran)
+
+Datos publicados por la Dirección Nacional de Información y Evaluación de la Calidad Educativa (Ministerio de Educación, Ciencia y Tecnología)
+
+Basado en [d3.micromaps](http://github.com/jazzido/d3micromaps) de [Manuel Aristarán](http://jazzido.com)
