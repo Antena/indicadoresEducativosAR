@@ -113,13 +113,9 @@
     </select>
     <label for="variable">Variable:</label>
     <select id="variable" name="variable">
-      <option value="abandono2003_egb_1">% Abandono EGB1 (2003)</option>
-      <option value="abandono2004_egb_1">% Abandono EGB1 (2004)</option>
-      <option value="abandono2005_egb_1">% Abandono EGB1 (2005)</option>
-      <option value="abandono2006_egb_1">% Abandono EGB1 (2006)</option>
-      <option value="abandono2007_egb_1">% Abandono EGB1 (2007)</option>
-      <option value="abandono2008_egb_1">% Abandono EGB1 (2008)</option>
-      <option value="abandono2009_egb_1">% Abandono EGB1 (2009)</option>
+      <option value="abandono">% Abandono EGB1 (2003)</option>
+      <option value="promocion">% Promocion EGB1 (2003)</option>
+      <option value="repitencia">% Repitencia EGB1 (2003)</option>    
     </select>
     <div class="vcard">
       <strong><a href="http://github.com/jazzido/d3micromaps">d3.micromaps</a></strong> — Copyright © 2013
@@ -220,15 +216,20 @@ var buildDataTable = function(data) {
         c.style.visibility = 'visible';
         d3.select('#partidos').node().appendChild(c);
         d3.select(c);
+
     }
 
 };
 
-var plotVariable = function(variable) {
+var plotVariable = function(variable, year, level) {
+    var indicador = variable + year + "_" + level;
+    console.log("indicador= " + indicador);
     var ext = d3.extent(censoData,
                         function(d) {
-                            return d[variable];
+                            return d[indicador];
                         });
+
+    console.log(ext)
 
     var scalex = d3.scale.linear()
         .domain(ext)
@@ -236,7 +237,7 @@ var plotVariable = function(variable) {
         .nice();
 
     var mean = d3.mean(censoData, function(d) {
-        return d[variable];
+        return d[indicador];
     });
 
     d3.select('#extent-min').html(toFixed(scalex.invert(0), 2) + '%');
@@ -248,8 +249,10 @@ var plotVariable = function(variable) {
         .attr('x2', scalex(mean));
 
     var sorted = censoData.sort(function(a,b) {
-        return +b[variable] - +a[variable];
+        return +b[indicador] - +a[indicador];
     });
+
+    console.log(sorted);
 
     d3.selectAll('#partidos div')
         .data(sorted)
@@ -260,7 +263,7 @@ var plotVariable = function(variable) {
        .transition()
        .duration(transitionDuration)
        .attr('cx', function(d) {
-           return scalex(d[variable]);
+           return scalex(d[indicador]);
        })
        .attr('r', 5);
 
@@ -313,8 +316,7 @@ d3.select('select#variable')
     .on('change', function() {
         var s = d3.select('select#variable').node();
         var selectedVariable = s.options[s.selectedIndex].value;
-        console.log(selectedVariable);
-        plotVariable(selectedVariable);
+        plotVariable(selectedVariable, 2003, "egb_1");
     });
 
 var ready = function(error, data, argentina) {
@@ -326,7 +328,7 @@ var ready = function(error, data, argentina) {
         .attr('width', pointsWidth)
         .attr('id', 'points');
     
-    buildDataTable(censoData);
+    buildDataTable(censoData, 2003, "egb_1");
     d3.select('select#variable').on('change')();
 };
 
