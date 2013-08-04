@@ -86,12 +86,14 @@
 
   svg.map { position: absolute; }
   svg.map#clonethis { visibility: hidden; }
-  svg.map path { fill: #333; stroke: #333; stroke-width: 0.05px;}
+  svg.map path { stroke: #333; stroke-width: 0.05px;}
   svg.map path.invisible { opacity: 0; }
   svg.map.scaled {
-          -webkit-transform: scale(2) ;
-          -moz-transform: scale(2);
-          left: 650px !important;
+          -webkit-transform: scale(2.2) ;
+          -moz-transform: scale(2.2);
+          -webkit-transition: -webkit-transform 100ms;
+          -moz-transition: -moz-transform 100ms;
+          -webkit-backface-visibility: hidden;
   }
 </style>
 </head>
@@ -205,7 +207,8 @@ var buildDataTable = function(data) {
             return i*rowHeight + rowHeight / 2;
         })
         .attr('r', 5)
-        .attr('fill', function(d, i) { return colors[i % rowsPerGroup]; });
+        .attr('fill', function(d, i) { return colors[i % rowsPerGroup]; })
+        .append('title');
 
     svg.select('#average-line').remove();
     svg.append('line')
@@ -305,12 +308,11 @@ var plotVariable = function(variable, year, level) {
        .attr('cx', function(d) {
            return scalex(d[indicador]);
        })
-       .attr('r', 5);
+       .attr('r', 5)
+       .select('title')
+       .text(function(d) { console.log(d[indicador]); return d[indicador] + '%'; });
 
-    svg.selectAll('circle')
-       .append('title').text(function(d) { return d[indicador]; });
-
-    d3.selectAll('#partidos .map path').style('fill', 'none');
+    d3.selectAll('#partidos .map path').style('fill', 'white');
     for (i = 0; i < sorted.length / rowsPerGroup; i++) {
         var m = d3.selectAll('#partidos svg.map')
             .filter(function(d,k) {
