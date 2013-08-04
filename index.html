@@ -85,37 +85,38 @@
 </head>
 <body>
   <div id="controls">
-    <label for="variable">Provincia:</label>
-    <select id="provincia" name="provincia">
-      <option value="buenos_aies">Buenos Aires</option>
-      <option value="CATAMARCA">Catamarca</option>
-      <option value="CHACO">Chaco</option>
-      <option value="CHUBUT">Chubut</option>
-      <option value="CORRIENTES">Corrientes</option>
-      <option value="CORDOBA">Córdoba</option>
-      <option value="ENTRE RIOS">Entre Ríos</option>
-      <option value="FORMOSA">Formosa</option>
-      <option value="JUJUY">Jujuy</option>
-      <option value="LA PAMPA">La Pampa</option>
-      <option value="LA RIOJA">La Rioja</option>
-      <option value="MENDOZA">Mendoza</option>
-      <option value="MISIONES">Misiones</option>
-      <option value="NEUQUEN">Neuquén</option>
-      <option value="RIO NEGRO">Río Negro</option>
-      <option value="SALTA">Salta</option>
-      <option value="SAN JUAN">San Juan</option>
-      <option value="SAN LUIS">San Luis</option>
-      <option value="SANTA CRUZ">Santa Cruz</option>
-      <option value="SANTA FE">Santa Fe</option>
-      <option value="SANTIAGO DEL ESTERO">Santiago del Estero</option>
-      <option value="TIERRA DEL FUEGO">Tierra del Fuego</option>
-      <option value="TUCUMAN">Tucumán</option>
-    </select>
     <label for="variable">Variable:</label>
     <select id="variable" name="variable">
-      <option value="abandono">% Abandono EGB1 (2003)</option>
-      <option value="promocion">% Promocion EGB1 (2003)</option>
-      <option value="repitencia">% Repitencia EGB1 (2003)</option>    
+      <option value="abandono">% Abandono</option>
+      <option value="promocion">% Promocion</option>
+      <option value="repitencia">% Repitencia</option>    
+    </select>
+    <label for="year">Año</label>
+    <select id="year" name="year">
+      <option value="2003">2003</option>
+      <option value="2004">2004</option>
+      <option value="2005">2005</option>
+      <option value="2006">2006</option>
+      <option value="2007">2007</option>
+      <option value="2008">2008</option>
+      <option value="2009">2009</option>
+    </select>
+    <label for="level">Nivel</label>
+    <select id="level" name="level">
+      <option value="egb_1">EGB1</option>
+      <option value="egb_2">EGB2</option>
+      <option value="egb_1y2_total">EGB 1 y 2</option>      
+      <option value="egb_3">EGB3</option>
+      <option value="egb_4">EGB4</option>
+      <option value="egb_5">EGB5</option>
+      <option value="egb_6">EGB6</option>
+      <option value="egb_7">EGB7</option>
+      <option value="egb_8">EGB8</option>
+      <option value="egb_9">EGB9</option>
+      <option value="poli_1">Polimodal 1</option>
+      <option value="poli_2">Polimodal 2</option>
+      <option value="poli_3">Polimodal 3</option>
+      <option value="poli_total">Polimodal Total</option>
     </select>
     <div class="vcard">
       <strong><a href="http://github.com/jazzido/d3micromaps">d3.micromaps</a></strong> — Copyright © 2013
@@ -229,8 +230,6 @@ var plotVariable = function(variable, year, level) {
                             return d[indicador];
                         });
 
-    console.log(ext)
-
     var scalex = d3.scale.linear()
         .domain(ext)
         .range([pointsMargin, pointsWidth - pointsMargin])
@@ -251,8 +250,6 @@ var plotVariable = function(variable, year, level) {
     var sorted = censoData.sort(function(a,b) {
         return +b[indicador] - +a[indicador];
     });
-
-    console.log(sorted);
 
     d3.selectAll('#partidos div')
         .data(sorted)
@@ -312,11 +309,15 @@ var buildMap = function(topology) {
         .attr('d', mapPath);    
 };
 
-d3.select('select#variable')
+d3.selectAll('select')
     .on('change', function() {
-        var s = d3.select('select#variable').node();
-        var selectedVariable = s.options[s.selectedIndex].value;
-        plotVariable(selectedVariable, 2003, "egb_1");
+        var sV = d3.select('select#variable').node();
+        var sY = d3.select('select#year').node();
+        var sL = d3.select('select#level').node();
+        var selectedVariable = sV.options[sV.selectedIndex].value;
+        var selectedYear = sY.options[sY.selectedIndex].value;
+        var selectedLevel = sL.options[sL.selectedIndex].value;
+        plotVariable(selectedVariable, selectedYear, selectedLevel);
     });
 
 var ready = function(error, data, argentina) {
@@ -330,6 +331,8 @@ var ready = function(error, data, argentina) {
     
     buildDataTable(censoData, 2003, "egb_1");
     d3.select('select#variable').on('change')();
+    // d3.select('select#year').on('change')();
+    // d3.select('select#level').on('change')();
 };
 
 if (window.frameElement) { // for bl.ocks.org
