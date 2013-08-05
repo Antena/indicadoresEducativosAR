@@ -3,8 +3,13 @@
 <head>
   <title>Indicadores Educativos</title>
 <style>
+  @import url(http://fonts.googleapis.com/css?family=Armata);
+
   body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Armata', sans-serif;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #615d52;
   }
   #controls {
     width: 90%;
@@ -34,8 +39,23 @@
     padding-left: 5px;
   }
 
+  #partidos .provinceCell {
+    width: 274px;
+    height: 30px;
+    background-color: #e7e7e7;
+    border: solid 3px #ffffff;
+    position: relative;
+    top: -32px;
+    z-index: -1;
+    left: -9px;
+  }
+
+  .bar {
+    stroke: #d1d1d1;
+  }
+
     #partidos div:hover {
-      background-color: #f5f5f5 !important;
+      background-color: #e4e4e4 !important;
       cursor: pointer;
     }
 
@@ -43,7 +63,7 @@
     #partidos div:nth-child(4n+2),
     #partidos div:nth-child(4n+3),
     #partidos div:nth-child(4n+4) {
-      background-color: #eee;
+      background-color: #f3f3f3;
     }
 
     #partidos div:nth-child(8n+1),
@@ -53,7 +73,7 @@
       background-color: white;
   }
 
-  #container span {
+  #container span.extent {
     position: absolute;
     top: -20px;
     font-size: 12px;
@@ -73,9 +93,10 @@
     position: absolute;
     top: 0px;
     left: 280px;
-    border-left: 1px solid #444;
-    border-right: 1px solid #444;
+    border-left: 1px solid #D1D1D1;
+    border-right: 1px solid #D1D1D1;
   }
+
   svg#sparklines {
     position: absolute;
     top: 0px;
@@ -96,6 +117,7 @@
           -webkit-backface-visibility: hidden;
   }
 </style>
+<link 
 </head>
 <body>
   <div id="controls">
@@ -136,8 +158,8 @@
     </select>
   </div>
   <div id="container">
-    <span id="extent-min"></span>
-    <span id="extent-max"></span>
+    <span id="extent-min" class="extent"></span>
+    <span id="extent-max" class="extent"></span>
 
     <div id="partidos">
     </div>
@@ -195,19 +217,28 @@ var buildDataTable = function(data) {
         .append('div');
 
     d3.selectAll('svg#points circle').remove();
-    d3.select('svg#points')
+    var group = d3.select('svg#points')
         .attr('height', data.length * rowHeight)
         .selectAll('circle')
         .data(data)
         .enter()
-        .append('circle')
+        .append('g');
+
+    group.append('line')
+        .attr('x1', pointsWidth/2-10)
+        .attr('y1', function(d,i) { return i*rowHeight + rowHeight/2; })
+        .attr('x2', pointsWidth/2)
+        .attr('y2', function(d,i) { return i*rowHeight + rowHeight/2; })
+        .attr('class', 'bar');      
+    
+    group.append('circle')
         .attr('cx', pointsWidth / 2)
         .attr('cy', function(d, i) {
             return i*rowHeight + rowHeight / 2;
         })
         .attr('r', 5)
         .attr('fill', function(d, i) { return colors[i % rowsPerGroup]; })
-        .append('title');
+        .append('title');    
 
     svg.select('#average-line').remove();
     svg.append('line')
@@ -219,6 +250,11 @@ var buildDataTable = function(data) {
         .attr('stroke', '#777')
         .attr('stroke-width', 1)
         .attr('id', 'average-line');
+    
+    svg.append('text')
+        .attr('x', pointsWidth/2)
+        .attr('y', 0)
+        .text('Media')
 
 
     d3.selectAll('svg#sparklines path').remove();
@@ -298,7 +334,7 @@ var plotVariable = function(variable, year, level) {
 
     d3.selectAll('#partidos div')
         .data(sorted)
-        .html(function(d) { return d['name'] });
+        .html(function(d) { return d['name'] + '<div class="provinceCell"></div>' });
 
     svg.selectAll('circle')
        .data(sorted)
@@ -310,6 +346,14 @@ var plotVariable = function(variable, year, level) {
        .attr('r', 5)
        .select('title')
        .text(function(d) { console.log(d[indicador]); return d[indicador] + '%'; });
+
+    svg.selectAll('.bar')
+      .data(sorted)
+      .transition()
+      .duration(transitionDuration)
+      .attr('x1', scalex(mean))
+      .attr('x2', function(d) { return scalex(d[indicador]); });
+
 
     d3.selectAll('#partidos .map path').style('fill', 'white');
     for (i = 0; i < sorted.length / rowsPerGroup; i++) {
